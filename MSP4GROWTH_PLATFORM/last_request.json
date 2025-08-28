@@ -1,0 +1,85 @@
+{
+  "request_id": "100632",
+  "input_polygon": [
+    [
+      3706419.904366705,
+      4124656.7018105406
+    ],
+    [
+      3699811.7827271884,
+      4123166.179758977
+    ],
+    [
+      3700995.897009413,
+      4118694.6136042955
+    ],
+    [
+      3705846.945843047,
+      4121102.3799952795
+    ],
+    [
+      3706419.904366705,
+      4124656.7018105406
+    ]
+  ],
+  "use_case": "aquaculture",
+  "model": {
+    "model_AUG": true,
+    "model_WS": 0.5,
+    "model_PF": true
+  },
+  "C_number": 3,
+  "N_size": [
+    3,
+    10
+  ],
+  "datasets": {},
+  "thresholds": {
+    "Coastline": {
+      "thresholds": [
+        2500,
+        4000,
+        5000,
+        8000,
+        10000
+      ],
+      "weights": 0.3,
+      "enabled": true
+    },
+    "WindSpeed": {
+      "thresholds": [
+        2,
+        3,
+        4,
+        4.5,
+        5
+      ],
+      "weights": 0.3,
+      "enabled": true
+    },
+    "Bathymetry": {
+      "thresholds": [
+        -100,
+        -80,
+        -60,
+        -50,
+        -30
+      ],
+      "weights": 0.3,
+      "enabled": true
+    },
+    "Ports": {
+      "thresholds": [
+        2500,
+        4000,
+        5000,
+        8000,
+        10000
+      ],
+      "weights": 0.1,
+      "enabled": true
+    }
+  },
+  "calc_type": "dist",
+  "threads": null
+}

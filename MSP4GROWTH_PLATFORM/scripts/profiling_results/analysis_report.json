@@ -1,0 +1,13 @@
+{
+    "execution_time": 229.7218370437622,
+    "max_rss_kb": 3324620,
+    "user_cpu_time": 189.07571,
+    "system_cpu_time": 6.312991,
+    "page_faults": 7,
+    "voluntary_context_switches": 144034,
+    "involuntary_context_switches": 2674,
+    "output_files": [
+        "/home/developer/workspace/results/6/WS_results_0.5.geojson",
+        "/home/developer/workspace/results/6/PF_results.geojson"
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "request_id": 1,
+    "input_polygon": [
+      [3672531.636, 4113070.473],
+      [3683060.901, 4120108.645],
+      [3684952.665, 4111452.193],
+      [3671518.851, 4111222.930],
+      [3672531.636, 4120070.473]
+      ],
+    "use_case": "aquaculture", 
+    "model":{"model_AUG" : "", "model_WS": "", "model_PF": ""},
+    "C_number": 3,
+    "N_size": [3,10],
+    "calc_type": "dist",
+    "thresholds":{
+        "Coastline": {"thresholds": [2500, 4000, 5000, 8000, 10000],
+                      "weights": 0.3},
+        "WindSpeed": {"thresholds": [2, 3, 4, 4.5, 5],
+                      "weights": 0.5},
+        "Bathymetry": {"thresholds": [-100, -80, -60, -50, -30],
+                      "weights": 0.1},
+        "Ports": {"thresholds": [2500, 4000, 5000, 8000, 10000],
+                  "weights": 0.1}
+    }
+}
+

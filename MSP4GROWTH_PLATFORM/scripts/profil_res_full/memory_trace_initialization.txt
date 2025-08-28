@@ -1,0 +1,21 @@
+Top memory allocations for initialization:
+/usr/lib/python3.10/json/decoder.py:353: size=8145 B, count=144, average=57 B
+/home/developer/workspace/scripts/profiling_script.py:186: size=1080 B, count=13, average=83 B
+/home/developer/workspace/scripts/profiling_script.py:253: size=744 B, count=4, average=186 B
+/usr/lib/python3.10/json/decoder.py:337: size=568 B, count=8, average=71 B
+/home/developer/workspace/scripts/profiling_script.py:250: size=488 B, count=1, average=488 B
+/usr/lib/python3.10/pathlib.py:611: size=450 B, count=7, average=64 B
+/home/developer/workspace/scripts/profiling_script.py:266: size=432 B, count=1, average=432 B
+/usr/lib/python3.10/logging/__init__.py:160: size=426 B, count=6, average=71 B
+/home/developer/workspace/scripts/profiling_script.py:55: size=416 B, count=1, average=416 B
+/home/developer/workspace/scripts/profiling_script.py:242: size=400 B, count=1, average=400 B
+/usr/lib/python3.10/pathlib.py:602: size=395 B, count=5, average=79 B
+/usr/lib/python3.10/json/__init__.py:293: size=380 B, count=5, average=76 B
+/home/developer/workspace/msp4growth/core/data_loader.py:64: size=376 B, count=2, average=188 B
+/usr/lib/python3.10/tracemalloc.py:558: size=351 B, count=5, average=70 B
+/usr/lib/python3.10/logging/__init__.py:424: size=342 B, count=6, average=57 B
+/usr/lib/python3.10/pathlib.py:74: size=340 B, count=5, average=68 B
+/usr/lib/python3.10/logging/__init__.py:615: size=331 B, count=5, average=66 B
+/usr/lib/python3.10/codecs.py:322: size=324 B, count=5, average=65 B
+/usr/lib/python3.10/logging/__init__.py:288: size=297 B, count=5, average=59 B
+/usr/lib/python3.10/logging/__init__.py:1103: size=294 B, count=4, average=74 B

@@ -1,0 +1,63 @@
+{
+    "request_id": 10,
+    "input_polygon":  [
+  [3712716.03, 4148989.34],
+  [3672245.94, 4148989.34],
+  [3672245.94, 4120330.45],
+  [3712716.03, 4120330.45],
+  [3712716.03, 4148989.34]
+],
+    "use_case": "aquaculture", 
+    "datasets": 
+         {"User_Data":{
+           "geom": {
+               "type": "FeatureCollection",
+               "features": [
+                 {
+                   "type": "Feature",
+                   "properties": {},
+                   "geometry": {
+                     "coordinates": [
+                       [
+                         [3742983.8243410653, 
+                         4141365.1805400824],
+ 
+                         [3739287.902042941, 
+                         4137499.0113585845],
+ 
+                         [3742922.612075378, 
+                         4134993.865558433],
+ 
+                         [3748359.448303795, 
+                         4140785.3609113554],
+ 
+                         [3746214.9561182486, 
+                         4144193.6841967963],
+ 
+                         [3742983.8243410653, 
+                         4141365.1805400824]]
+                       ],
+                 "type": "Polygon"}
+                 }
+               ]
+             }
+           }
+      },
+    "model":{"model_WS": 0.5, "model_AUG": false, "model_PF": true},
+    "C_number": 3,
+    "N_size": [3,10],
+    "calc_type": "dist",
+    "thresholds":{
+        "Coastline": {"thresholds": [2500, 4000, 5000, 8000, 10000],
+                      "weights": 0.2},
+        "WindSpeed": {"thresholds": [2, 3, 4, 4.5, 5],
+                      "weights": 0.3},
+        "Bathymetry": {"thresholds": [-100, -80, -60, -50, -30],
+                      "weights": 0.1},
+        "Ports": {"thresholds": [2500, 4000, 5000, 8000, 10000],
+                  "weights": 0.1},
+        "User_Data": {"thresholds": [12, 32, 43, 62, 534],
+                        "weights": 0.3}
+    }
+}
+

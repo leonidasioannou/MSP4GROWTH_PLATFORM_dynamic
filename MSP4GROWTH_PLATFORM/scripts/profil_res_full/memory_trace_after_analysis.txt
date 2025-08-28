@@ -1,0 +1,21 @@
+Top memory allocations for after_analysis:
+/home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:920: size=1668 MiB, count=15080988, average=116 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/PyomoModel.py:435: size=953 MiB, count=15081034, average=66 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/expr/ndarray.py:33: size=863 MiB, count=22613326, average=40 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:161: size=750 MiB, count=15081045, average=52 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/var.py:123: size=748 MiB, count=7540519, average=104 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:129: size=462 MiB, count=7540521, average=64 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/set.py:1816: size=321 MiB, count=5, average=64.1 MiB
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/var.py:798: size=320 MiB, count=2, average=160 MiB
+/home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:915: size=173 MiB, count=7540517, average=24 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:315: size=119 MiB, count=14, average=8730 KiB
+/home/developer/workspace/msp4growth/core/models/aug_model.py:146: size=61.0 MiB, count=16487, average=3881 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:139: size=61.0 MiB, count=16484, average=3881 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:153: size=60.8 MiB, count=10991, average=5797 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:167: size=59.7 MiB, count=9, average=6790 KiB
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/indexed_component.py:1107: size=1012 KiB, count=8246, average=126 B
+<frozen importlib._bootstrap_external>:672: size=955 KiB, count=9645, average=101 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/expr/relational_expr.py:543: size=837 KiB, count=16479, average=52 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/constraint.py:243: size=333 KiB, count=8239, average=41 B
+/usr/lib/python3.10/linecache.py:137: size=236 KiB, count=2297, average=105 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:164: size=213 KiB, count=2495, average=87 B

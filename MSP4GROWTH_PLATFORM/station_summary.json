@@ -1,0 +1,200 @@
+{
+  "Achna": {
+    "coordinates": {
+      "lat": 35.025506,
+      "lon": 33.774431
+    },
+    "data_records": 17084,
+    "temperature_mean": 21.16,
+    "humidity_mean": 64.19,
+    "wind_speed_mean": 2.2,
+    "total_rainfall": 57.3
+  },
+  "Kathikas": {
+    "coordinates": {
+      "lat": 34.914097,
+      "lon": 32.412314
+    },
+    "data_records": 17336,
+    "temperature_mean": 18.69,
+    "humidity_mean": 64.74,
+    "wind_speed_mean": "N/A",
+    "total_rainfall": 142.2
+  },
+  "Polis": {
+    "coordinates": {
+      "lat": 35.04195,
+      "lon": 32.437228
+    },
+    "data_records": 17398,
+    "temperature_mean": 20.81,
+    "humidity_mean": 63.87,
+    "wind_speed_mean": 2.56,
+    "total_rainfall": 111.21
+  },
+  "Cavo_Greco": {
+    "coordinates": {
+      "lat": 34.971012,
+      "lon": 34.070785
+    },
+    "data_records": 17274,
+    "temperature_mean": 21.45,
+    "humidity_mean": 69.61,
+    "wind_speed_mean": 3.68,
+    "total_rainfall": 92.7
+  },
+  "Tepak": {
+    "coordinates": {
+      "lat": 34.67696,
+      "lon": 33.037545
+    },
+    "data_records": 17300,
+    "temperature_mean": 21.19,
+    "humidity_mean": 60.24,
+    "wind_speed_mean": 1.36,
+    "total_rainfall": 87.9
+  },
+  "Limassol": {
+    "coordinates": {
+      "lat": 34.645719,
+      "lon": 33.003984
+    },
+    "data_records": 17403,
+    "temperature_mean": 20.29,
+    "humidity_mean": 66.94,
+    "wind_speed_mean": 2.64,
+    "total_rainfall": 104.1
+  },
+  "Zygi": {
+    "coordinates": {
+      "lat": 34.741325,
+      "lon": 33.3271
+    },
+    "data_records": 446,
+    "temperature_mean": 25.94,
+    "humidity_mean": 62.11,
+    "wind_speed_mean": 0.47,
+    "total_rainfall": 0.0
+  },
+  "Paphos": {
+    "coordinates": {
+      "lat": 34.779431,
+      "lon": 32.438547
+    },
+    "data_records": 17363,
+    "temperature_mean": 20.86,
+    "humidity_mean": 62.83,
+    "wind_speed_mean": 1.48,
+    "total_rainfall": 146.0
+  },
+  "Larnaca_Airport": {
+    "coordinates": {
+      "lat": 34.873476,
+      "lon": 33.617338
+    },
+    "data_records": 17414,
+    "temperature_mean": 21.21,
+    "humidity_mean": 65.39,
+    "wind_speed_mean": 2.98,
+    "total_rainfall": 77.0
+  },
+  "Avdimou": {
+    "coordinates": {
+      "lat": 34.684372,
+      "lon": 32.757369
+    },
+    "data_records": 446,
+    "temperature_mean": 26.33,
+    "humidity_mean": 55.88,
+    "wind_speed_mean": 0.61,
+    "total_rainfall": 0.0
+  },
+  "Pentakomo": {
+    "coordinates": {
+      "lat": 34.707635,
+      "lon": 33.261697
+    },
+    "data_records": 14649,
+    "temperature_mean": 20.83,
+    "humidity_mean": 65.3,
+    "wind_speed_mean": 3.69,
+    "total_rainfall": 64.24
+  },
+  "Pareklisia": {
+    "coordinates": {
+      "lat": 34.738835,
+      "lon": 33.159022
+    },
+    "data_records": 17030,
+    "temperature_mean": 21.17,
+    "humidity_mean": 59.92,
+    "wind_speed_mean": 1.21,
+    "total_rainfall": 102.4
+  },
+  "Amathus": {
+    "coordinates": {
+      "lat": 34.695,
+      "lon": 33.134
+    },
+    "data_records": 12733,
+    "temperature_mean": 22.45,
+    "humidity_mean": 71.2,
+    "wind_speed_mean": 3.5,
+    "total_rainfall": 193210618.41
+  },
+  "Akamas": {
+    "coordinates": {
+      "lat": 35.025974,
+      "lon": 32.328942
+    },
+    "data_records": 17324,
+    "temperature_mean": 19.37,
+    "humidity_mean": 68.42,
+    "wind_speed_mean": 4.07,
+    "total_rainfall": 193.3
+  },
+  "Kato_Pyrgos": {
+    "coordinates": {
+      "lat": 35.181564,
+      "lon": 32.687097
+    },
+    "data_records": 445,
+    "temperature_mean": 26.77,
+    "humidity_mean": 54.72,
+    "wind_speed_mean": 0.97,
+    "total_rainfall": 0.0
+  },
+  "Xylophagou": {
+    "coordinates": {
+      "lat": 34.977811,
+      "lon": 33.837989
+    },
+    "data_records": 17091,
+    "temperature_mean": 22.08,
+    "humidity_mean": 69.43,
+    "wind_speed_mean": 3.27,
+    "total_rainfall": 83.52
+  },
+  "Paphos_Airport": {
+    "coordinates": {
+      "lat": 34.715442,
+      "lon": 32.479072
+    },
+    "data_records": 17381,
+    "temperature_mean": 21.14,
+    "humidity_mean": 66.21,
+    "wind_speed_mean": 3.67,
+    "total_rainfall": 93.3
+  },
+  "Pyrgos": {
+    "coordinates": {
+      "lat": 35.141541,
+      "lon": 32.616321
+    },
+    "data_records": 16474,
+    "temperature_mean": 19.53,
+    "humidity_mean": 57.82,
+    "wind_speed_mean": 2.45,
+    "total_rainfall": 199.03
+  }
+}

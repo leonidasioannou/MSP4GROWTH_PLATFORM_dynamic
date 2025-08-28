@@ -17,10 +17,11 @@ from ..config import RESULTS_DIR, DATA_DIR
 from .models.aug_model import run_augmecon_model
 from .models.ws_model import run_weighted_sum_model
 from .models.pf_model import run_particle_filter_model
-from .utils.geo_utils import load_gdf, load_dataset, weight_calculation, normalize_dki_matrix
+from .utils.geo_utils import load_gdf, load_dataset, weight_calculation
+from .utils.data_utils import generate_comprehensive_analysis
 import numpy as np
 from shapely.geometry import Polygon
-from .report_generator import MSP4GROWTHReportGenerator
+from .utils.report.report_generator import MSP4GROWTHReportGenerator
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -75,10 +76,10 @@ class MSP4GROWTHAnalysis:
         # Set up results directory
         self.results_dir = RESULTS_DIR / str(self.request_id)
         self.results_dir.mkdir(exist_ok=True, parents=True)
-
+        
         # Add report generation flag
         self.generate_report = generate_report
-    
+
         # Apply thread configuration if provided
         if thread_config:
             for key, value in thread_config.items():
@@ -96,7 +97,7 @@ class MSP4GROWTHAnalysis:
         2. Calculate weights and distances
         3. Run selected optimization models
         4. Generate PDF report
-
+        
         Returns:
             Dictionary of model names to result file paths and report path
         """
@@ -248,6 +249,20 @@ class MSP4GROWTHAnalysis:
             )
             
             weights.append(weight)
+            
+        # Adjust these paths to your actual files
+        csv_path = DATA_DIR / "Merged_data.csv"
+
+        # Run comprehensive analysis
+        cell_mapping, station_analysis, comparison = generate_comprehensive_analysis(
+            gdf, csv_path
+        )
+        
+        # Print sample results
+        print(f"\nSample station analysis for: {list(station_analysis.keys())[0]}")
+        sample_station = list(station_analysis.keys())[0]
+        print(f"Data period: {station_analysis[sample_station]['station_info']['data_period']}")
+        print(f"Seasonal temperature means: {station_analysis[sample_station].get('temperature_analysis', {})}")
         
         # Validate that weights sum to 1
         total_weight = sum(weights)

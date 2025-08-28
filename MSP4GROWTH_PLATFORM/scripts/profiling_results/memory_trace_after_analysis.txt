@@ -1,0 +1,21 @@
+Top memory allocations for after_analysis:
+/home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:920: size=82.9 MiB, count=749069, average=116 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/PyomoModel.py:435: size=51.4 MiB, count=749090, average=72 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/expr/ndarray.py:33: size=42.8 MiB, count=1121811, average=40 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:161: size=37.4 MiB, count=749101, average=52 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/var.py:123: size=37.1 MiB, count=374546, average=104 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:129: size=23.1 MiB, count=374549, average=65 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/set.py:1816: size=20.1 MiB, count=5, average=4110 KiB
+/home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/var.py:798: size=20.0 MiB, count=2, average=10.0 MiB
+<frozen importlib._bootstrap_external>:672: size=14.2 MiB, count=111013, average=134 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:915: size=8778 KiB, count=374545, average=24 B
+/home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:315: size=6434 KiB, count=16, average=402 KiB
+<frozen importlib._bootstrap>:241: size=3504 KiB, count=31925, average=112 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:146: size=3352 KiB, count=3683, average=932 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:139: size=3350 KiB, count=3680, average=932 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:153: size=3293 KiB, count=2455, average=1374 B
+/home/developer/workspace/msp4growth/core/models/aug_model.py:167: size=3217 KiB, count=9, average=357 KiB
+/home/developer/.local/lib/python3.10/site-packages/openpyxl/descriptors/__init__.py:13: size=811 KiB, count=2754, average=301 B
+/home/developer/.local/lib/python3.10/site-packages/scipy/_lib/doccer.py:85: size=775 KiB, count=250, average=3176 B
+/home/developer/.local/lib/python3.10/site-packages/scipy/stats/_distn_infrastructure.py:735: size=348 KiB, count=3450, average=103 B
+/home/developer/.local/lib/python3.10/site-packages/openpyxl/descriptors/base.py:36: size=282 KiB, count=1713, average=168 B

@@ -1,0 +1,58 @@
+         284435145 function calls (283816152 primitive calls) in 230.377 seconds
+
+   Ordered by: cumulative time
+   List reduced from 6002 to 50 due to restriction <50>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.039    0.039  229.721  229.721 /home/developer/workspace/msp4growth/core/data_loader.py:83(run_analysis)
+        1    0.002    0.002  222.200  222.200 /home/developer/workspace/msp4growth/core/data_loader.py:270(_run_optimization_models)
+        1    0.000    0.000  183.593  183.593 /home/developer/workspace/msp4growth/core/models/aug_model.py:60(run_augmecon_model)
+        1    0.002    0.002  183.582  183.582 /home/developer/workspace/msp4growth/core/models/aug_model.py:109(two_objective_model)
+        1    0.000    0.000  175.242  175.242 /home/developer/.local/lib/python3.10/site-packages/pyaugmecon/pyaugmecon.py:245(solve)
+        1    0.000    0.000   96.919   96.919 /home/developer/.local/lib/python3.10/site-packages/pyaugmecon/model.py:245(construct_payoff)
+        4    2.226    0.556   96.918   24.230 /home/developer/.local/lib/python3.10/site-packages/pyaugmecon/model.py:255(set_payoff)
+        4    0.000    0.000   88.258   22.064 /home/developer/.local/lib/python3.10/site-packages/pyaugmecon/model.py:151(solve)
+        4    0.020    0.005   88.035   22.009 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/direct_solver.py:72(solve)
+        1    0.117    0.117   77.426   77.426 /home/developer/.local/lib/python3.10/site-packages/pyaugmecon/pyaugmecon.py:84(_find_solutions)
+      146    0.002    0.000   70.303    0.482 /usr/lib/python3.10/multiprocessing/connection.py:917(wait)
+       73    0.000    0.000   70.300    0.963 /usr/lib/python3.10/multiprocessing/process.py:142(join)
+       73    0.001    0.000   70.300    0.963 /usr/lib/python3.10/multiprocessing/popen_fork.py:36(wait)
+      146    0.001    0.000   70.296    0.481 /usr/lib/python3.10/selectors.py:403(select)
+      146   70.295    0.481   70.295    0.481 {method 'poll' of 'select.poll' objects}
+       71    0.001    0.000   70.225    0.989 /home/developer/.local/lib/python3.10/site-packages/pyaugmecon/process_handler.py:69(join)
+        4    0.000    0.000   56.291   14.073 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/direct_solver.py:34(_presolve)
+        4    0.288    0.072   56.279   14.070 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:456(_set_instance)
+        4    0.000    0.000   54.765   13.691 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:491(_add_block)
+        4    0.570    0.142   54.765   13.691 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/direct_or_persistent_solver.py:213(_add_block)
+     7350    1.752    0.000   25.633    0.003 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:501(_add_constraint)
+        1    0.252    0.252   19.442   19.442 /home/developer/workspace/msp4growth/core/models/ws_model.py:19(run_weighted_sum_model)
+        1   12.262   12.262   19.162   19.162 /home/developer/workspace/msp4growth/core/models/ws_model.py:88(WS)
+        1    0.002    0.002   19.080   19.080 /home/developer/workspace/msp4growth/core/models/pf_model.py:23(run_particle_filter_model)
+  1498176    6.460    0.000   18.947    0.000 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:344(_add_var)
+        1    0.474    0.474   18.937   18.937 /home/developer/workspace/msp4growth/core/models/pf_model.py:99(run_particle_filter_real)
+     7354    7.264    0.001   17.600    0.002 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:313(_get_expr_from_pyomo_expr)
+        4   11.390    2.848   14.092    3.523 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:660(_postsolve)
+ 19477512    6.732    0.000   10.498    0.000 /home/developer/.local/lib/python3.10/site-packages/pyomo/common/collections/component_map.py:111(__getitem__)
+     7354    0.995    0.000    9.768    0.001 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:279(_get_expr_from_pyomo_repn)
+        4    9.467    2.367    9.468    2.367 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:239(_apply_solver)
+        4    0.000    0.000    8.058    2.015 /home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/PyomoModel.py:189(load_from)
+ 37456861    2.538    0.000    7.861    0.000 /home/developer/.local/lib/python3.10/site-packages/pyomo/common/collections/component_map.py:43(_unhashable)
+2674/2619    1.538    0.001    7.490    0.003 {built-in method builtins.sum}
+        4    2.022    0.505    7.460    1.865 /home/developer/.local/lib/python3.10/site-packages/pyomo/solvers/plugins/solvers/gurobi_direct.py:630(_set_objective)
+ 11251632    4.706    0.000    7.254    0.000 /home/developer/.local/lib/python3.10/site-packages/pyomo/common/collections/component_map.py:118(__setitem__)
+        1    0.000    0.000    6.898    6.898 /home/developer/.local/lib/python3.10/site-packages/pyaugmecon/model.py:182(pickle)
+        1    0.390    0.390    6.898    6.898 /home/developer/.local/lib/python3.10/site-packages/cloudpickle/cloudpickle.py:1506(dump)
+       14    2.107    0.151    6.508    0.465 {method 'dump' of '_pickle.Pickler' objects}
+        1    0.000    0.000    6.508    6.508 /home/developer/.local/lib/python3.10/site-packages/cloudpickle/cloudpickle.py:1301(dump)
+        4    0.000    0.000    6.434    1.609 /home/developer/.local/lib/python3.10/site-packages/pyaugmecon/model.py:71(obj_val)
+        4    0.000    0.000    6.434    1.608 /home/developer/.local/lib/python3.10/site-packages/pyomo/core/base/expression.py:54(__call__)
+        4    0.000    0.000    6.434    1.608 /home/developer/.local/lib/python3.10/site-packages/pyomo/core/expr/base.py:102(__call__)
+        4    0.033    0.008    6.434    1.608 /home/developer/.local/lib/python3.10/site-packages/pyomo/core/expr/visitor.py:1279(evaluate_expression)
+        4    3.133    0.783    6.401    1.600 /home/developer/.local/lib/python3.10/site-packages/pyomo/core/expr/visitor.py:887(dfs_postorder_stack)
+ 42082028    6.210    0.000    6.210    0.000 {built-in method builtins.id}
+    29230    0.064    0.000    6.200    0.000 /home/developer/.local/lib/python3.10/site-packages/pandas/core/indexing.py:1176(__getitem__)
+    29216    0.062    0.000    6.092    0.000 /home/developer/.local/lib/python3.10/site-packages/pandas/core/indexing.py:1719(_getitem_axis)
+    29126    0.020    0.000    5.786    0.000 /home/developer/.local/lib/python3.10/site-packages/pandas/core/indexing.py:1696(_get_list_axis)
+    29199    0.080    0.000    5.780    0.000 /home/developer/.local/lib/python3.10/site-packages/pandas/core/generic.py:4142(_take_with_is_copy)
+
+

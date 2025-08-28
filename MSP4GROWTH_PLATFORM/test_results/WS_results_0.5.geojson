@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "WS_results_0.5",
+"features": [
+{ "type": "Feature", "properties": { "fid": 2, "i1": 2.0, "Description": "C1", "interest value": 0.7 }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 1.0, 0.0 ], [ 2.0, 0.0 ], [ 2.0, 1.0 ], [ 1.0, 1.0 ], [ 1.0, 0.0 ] ] ] } },
+{ "type": "Feature", "properties": { "fid": 4, "i1": 4.0, "Description": "N1", "interest value": 0.9 }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 1.0, 1.0 ], [ 2.0, 1.0 ], [ 2.0, 2.0 ], [ 1.0, 2.0 ], [ 1.0, 1.0 ] ] ] } }
+]
+}

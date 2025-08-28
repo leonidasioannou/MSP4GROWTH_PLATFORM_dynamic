@@ -9,10 +9,12 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 import billiard as mp
+from datetime import datetime as dt
 from pathlib import Path
 from functools import partial
 from shapely.geometry import Point, Polygon
 from typing import Dict, List, Tuple, Any, Optional, Union, Set, Callable
+from scipy.spatial.distance import cdist
 import json
 logger = logging.getLogger(__name__)
 
@@ -318,6 +320,566 @@ def _compute_value_for_centroid(
         value = min_dist
     
     return centroid_to_id[centroid_idx], value
+
+def find_closest_stations(gdf, stations_df, n_closest=2):
+    """
+    Find the n closest meteorological stations for each grid cell
+    
+    Parameters:
+    gdf: GeoDataFrame with grid cells (EPSG:3857)
+    stations_df: DataFrame with station data (must have 'Latitude', 'Longitude', 'Station' columns)
+    n_closest: number of closest stations to find (default: 2)
+    
+    Returns:
+    Dictionary with cell_id as key and list of closest stations as value
+    """
+    
+    # Get unique stations with their coordinates
+    unique_stations = stations_df[['Station', 'Latitude', 'Longitude']].drop_duplicates('Station')
+    
+    # Create points from station coordinates (WGS84 lat/lon)
+    station_points = [Point(row['Longitude'], row['Latitude']) for _, row in unique_stations.iterrows()]
+    station_gdf = gpd.GeoDataFrame(unique_stations, geometry=station_points, crs='EPSG:4326')
+    
+    # Reproject stations to match grid CRS (EPSG:3857)
+    station_gdf = station_gdf.to_crs(gdf.crs)
+    
+    # Get centroids of grid cells
+    cell_centroids = gdf.geometry.centroid
+    
+    # Convert to arrays for distance calculation
+    cell_coords = np.array([[geom.x, geom.y] for geom in cell_centroids])
+    station_coords = np.array([[geom.x, geom.y] for geom in station_gdf.geometry])
+    
+    # Calculate distances between all cells and stations
+    distances = cdist(cell_coords, station_coords)
+    
+    # Find closest stations for each cell
+    cell_station_mapping = {}
+    
+    for i, cell_id in enumerate(gdf['fid']):  # Using 'fid' as the cell identifier
+        # Get indices of n closest stations
+        closest_indices = np.argsort(distances[i])[:n_closest]
+        
+        # Get station names and distances
+        closest_stations = []
+        for idx in closest_indices:
+            station_info = {
+                'station_name': unique_stations.iloc[idx]['Station'],
+                'distance_km': distances[i][idx] / 1000,  # Convert to km (distance in meters for EPSG:3857)
+                'coordinates': {
+                    'lat': unique_stations.iloc[idx]['Latitude'],
+                    'lon': unique_stations.iloc[idx]['Longitude']
+                }
+            }
+            closest_stations.append(station_info)
+        
+        cell_station_mapping[str(cell_id)] = closest_stations
+    
+    return cell_station_mapping
+
+def calculate_station_averages(stations_df, meteorological_columns):
+    """
+    Calculate average values for each meteorological variable per station
+    
+    Parameters:
+    stations_df: DataFrame with station meteorological data
+    meteorological_columns: list of column names containing meteorological variables
+    
+    Returns:
+    Dictionary with station averages
+    """
+    
+    # Group by station and calculate means
+    station_averages = {}
+    
+    for station_name in stations_df['Station'].unique():
+        station_data = stations_df[stations_df['Station'] == station_name]
+        
+        averages = {}
+        for col in meteorological_columns:
+            if col in station_data.columns:
+                # Calculate mean, excluding NaN values
+                avg_value = station_data[col].mean()
+                averages[col] = float(avg_value) if not pd.isna(avg_value) else None
+        
+        station_averages[station_name] = {
+            'coordinates': {
+                'lat': station_data['Latitude'].iloc[0],
+                'lon': station_data['Longitude'].iloc[0]
+            },
+            'averages': averages,
+            'data_points': len(station_data)
+        }
+    
+    return station_averages
+
+def get_season(month):
+    """
+    Classify months into seasons (Northern Hemisphere)
+    """
+    if month in [12, 1, 2]:
+        return 'Winter'
+    elif month in [3, 4, 5]:
+        return 'Spring'
+    elif month in [6, 7, 8]:
+        return 'Summer'
+    else:
+        return 'Autumn'
+
+def get_time_of_day(hour):
+    """
+    Classify hours into time periods
+    """
+    if 6 <= hour < 12:
+        return 'Morning'
+    elif 12 <= hour < 18:
+        return 'Afternoon'
+    elif 18 <= hour < 24:
+        return 'Evening'
+    else:
+        return 'Night'
+
+def calculate_wind_statistics(wind_speed, wind_direction):
+    """
+    Calculate comprehensive wind statistics
+    """
+    wind_stats = {}
+    
+    # Basic wind speed statistics
+    wind_stats['speed'] = {
+        'mean': round(wind_speed.mean(), 2),
+        'median': round(wind_speed.median(), 2),
+        'std': round(wind_speed.std(), 2),
+        'min': round(wind_speed.min(), 2),
+        'max': round(wind_speed.max(), 2),
+        'percentile_25': round(wind_speed.quantile(0.25), 2),
+        'percentile_75': round(wind_speed.quantile(0.75), 2)
+    }
+    
+    # Wind speed categories (Beaufort scale simplified)
+    wind_categories = pd.cut(wind_speed, 
+                           bins=[0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, float('inf')],
+                           labels=['Calm', 'Light Air', 'Light Breeze', 'Gentle Breeze', 
+                                  'Moderate Breeze', 'Fresh Breeze', 'Strong Breeze+'])
+    wind_stats['categories'] = wind_categories.value_counts().to_dict()
+    
+    # Predominant wind directions
+    if not wind_direction.isna().all():
+        # Convert degrees to cardinal directions
+        def deg_to_cardinal(deg):
+            directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+                         'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+            idx = round(deg / 22.5) % 16
+            return directions[idx]
+        
+        cardinal_directions = wind_direction.apply(deg_to_cardinal)
+        wind_stats['predominant_directions'] = cardinal_directions.value_counts().head(5).to_dict()
+        wind_stats['mean_direction'] = round(wind_direction.mean(), 1)
+    
+    return wind_stats
+
+def comprehensive_station_analysis(stations_df):
+    """
+    Perform comprehensive analysis for each meteorological station
+    """
+
+    # Create a copy to avoid modifying the original dataframe
+    stations_df = stations_df.copy()
+
+    # Prepare datetime column
+    stations_df['datetime'] = pd.to_datetime(stations_df['Timestamp'])
+    stations_df['year'] = stations_df['datetime'].dt.year
+    stations_df['month'] = stations_df['datetime'].dt.month
+    stations_df['day'] = stations_df['datetime'].dt.day
+    stations_df['hour'] = stations_df['datetime'].dt.hour
+    stations_df['season'] = stations_df['month'].apply(get_season)
+    stations_df['time_of_day'] = stations_df['hour'].apply(get_time_of_day)
+    stations_df['day_of_year'] = stations_df['datetime'].dt.dayofyear
+    
+    # Identify meteorological columns
+    excluded_cols = ['Station', 'Latitude', 'Longitude', 'Timestamp', 'datetime', 
+                     'year', 'month', 'day', 'hour', 'season', 'time_of_day', 'day_of_year']
+    meteorological_columns = [col for col in stations_df.columns if col not in excluded_cols]
+    
+    comprehensive_analysis = {}
+    
+    for station_name in stations_df['Station'].unique():
+        print(f"Analyzing station: {station_name}")
+        station_data = stations_df[stations_df['Station'] == station_name].copy()
+        
+        analysis = {
+            'station_info': {
+                'name': station_name,
+                'coordinates': {
+                    'lat': station_data['Latitude'].iloc[0],
+                    'lon': station_data['Longitude'].iloc[0]
+                },
+                'data_period': {
+                    'start_date': station_data['datetime'].min().strftime('%Y-%m-%d %H:%M:%S'),
+                    'end_date': station_data['datetime'].max().strftime('%Y-%m-%d %H:%M:%S'),
+                    'total_records': len(station_data),
+                    'years_covered': sorted([int(x) for x in station_data['year'].unique().tolist()])
+                }
+            }
+        }
+        
+        # === OVERALL STATISTICS ===
+        overall_stats = {}
+        for col in meteorological_columns:
+            if col in station_data.columns and not station_data[col].isna().all():
+                stats = {
+                    'mean': round(station_data[col].mean(), 2),
+                    'median': round(station_data[col].median(), 2),
+                    'std': round(station_data[col].std(), 2),
+                    'min': round(station_data[col].min(), 2),
+                    'max': round(station_data[col].max(), 2),
+                    'percentile_25': round(station_data[col].quantile(0.25), 2),
+                    'percentile_75': round(station_data[col].quantile(0.75), 2),
+                    'missing_values': int(station_data[col].isna().sum()),
+                    'missing_percentage': round(station_data[col].isna().mean() * 100, 1)
+                }
+                overall_stats[col] = stats
+        
+        analysis['overall_statistics'] = overall_stats
+        
+        # === SEASONAL ANALYSIS ===
+        seasonal_analysis = {}
+        for season in ['Winter', 'Spring', 'Summer', 'Autumn']:
+            season_data = station_data[station_data['season'] == season]
+            if len(season_data) > 0:
+                seasonal_stats = {}
+                for col in meteorological_columns:
+                    if col in season_data.columns and not season_data[col].isna().all():
+                        seasonal_stats[col] = {
+                            'mean': round(season_data[col].mean(), 2),
+                            'min': round(season_data[col].min(), 2),
+                            'max': round(season_data[col].max(), 2),
+                            'records': len(season_data)
+                        }
+                seasonal_analysis[season] = seasonal_stats
+        
+        analysis['seasonal_analysis'] = seasonal_analysis
+        
+        # === MONTHLY PATTERNS ===
+        monthly_patterns = {}
+        month_names = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December']
+        
+        for month in range(1, 13):
+            month_data = station_data[station_data['month'] == month]
+            if len(month_data) > 0:
+                month_name = month_names[month - 1]
+                monthly_stats = {}
+                for col in meteorological_columns:
+                    if col in month_data.columns and not month_data[col].isna().all():
+                        monthly_stats[col] = round(month_data[col].mean(), 2)
+                monthly_patterns[month_name] = monthly_stats
+        
+        analysis['monthly_patterns'] = monthly_patterns
+        
+        # === DAILY PATTERNS (by hour) ===
+        daily_patterns = {}
+        for hour in range(24):
+            hour_data = station_data[station_data['hour'] == hour]
+            if len(hour_data) > 0:
+                hourly_stats = {}
+                for col in meteorological_columns:
+                    if col in hour_data.columns and not hour_data[col].isna().all():
+                        hourly_stats[col] = round(hour_data[col].mean(), 2)
+                daily_patterns[f"{hour:02d}:00"] = hourly_stats
+        
+        analysis['daily_patterns'] = daily_patterns
+        
+        # === TIME OF DAY ANALYSIS ===
+        time_of_day_analysis = {}
+        for time_period in ['Morning', 'Afternoon', 'Evening', 'Night']:
+            period_data = station_data[station_data['time_of_day'] == time_period]
+            if len(period_data) > 0:
+                period_stats = {}
+                for col in meteorological_columns:
+                    if col in period_data.columns and not period_data[col].isna().all():
+                        period_stats[col] = {
+                            'mean': round(period_data[col].mean(), 2),
+                            'min': round(period_data[col].min(), 2),
+                            'max': round(period_data[col].max(), 2)
+                        }
+                time_of_day_analysis[time_period] = period_stats
+        
+        analysis['time_of_day_analysis'] = time_of_day_analysis
+        
+        # === WIND ANALYSIS ===
+        if 'Wind Speed (m/s)' in station_data.columns and 'Wind Direction (Deg.)' in station_data.columns:
+            wind_stats = calculate_wind_statistics(
+                station_data['Wind Speed (m/s)'].dropna(),
+                station_data['Wind Direction (Deg.)'].dropna()
+            )
+            analysis['wind_analysis'] = wind_stats
+        
+        # === PRECIPITATION ANALYSIS ===
+        if 'Rain (mm)' in station_data.columns:
+            rain_data = station_data['Rain (mm)'].dropna()
+            if len(rain_data) > 0:
+                precipitation_stats = {
+                    'total_rainfall': round(rain_data.sum(), 2),
+                    'rainy_hours': int((rain_data > 0).sum()),
+                    'rainy_hours_percentage': round((rain_data > 0).mean() * 100, 1),
+                    'average_rainfall_when_raining': round(rain_data[rain_data > 0].mean(), 2) if (rain_data > 0).any() else 0,
+                    'max_hourly_rainfall': round(rain_data.max(), 2),
+                    'seasonal_rainfall': {}
+                }
+                
+                # Seasonal rainfall totals
+                for season in ['Winter', 'Spring', 'Summer', 'Autumn']:
+                    season_rain = station_data[station_data['season'] == season]['Rain (mm)'].dropna()
+                    if len(season_rain) > 0:
+                        precipitation_stats['seasonal_rainfall'][season] = round(season_rain.sum(), 2)
+                
+                analysis['precipitation_analysis'] = precipitation_stats
+        
+        # === TEMPERATURE ANALYSIS ===
+        temp_cols = ['Temperature (°C)', 'Max Temperature (°C)', 'Min Temperature (°C)']
+        available_temp_cols = [col for col in temp_cols if col in station_data.columns]
+        
+        if available_temp_cols:
+            temperature_analysis = {}
+            
+            for col in available_temp_cols:
+                temp_data = station_data[col].dropna()
+                if len(temp_data) > 0:
+                    temperature_analysis[col.replace(' (°C)', '')] = {
+                        'annual_mean': round(temp_data.mean(), 2),
+                        'absolute_min': round(temp_data.min(), 2),
+                        'absolute_max': round(temp_data.max(), 2),
+                        'seasonal_means': {}
+                    }
+                    
+                    # Seasonal temperature means
+                    for season in ['Winter', 'Spring', 'Summer', 'Autumn']:
+                        season_temp = station_data[station_data['season'] == season][col].dropna()
+                        if len(season_temp) > 0:
+                            temperature_analysis[col.replace(' (°C)', '')]['seasonal_means'][season] = round(season_temp.mean(), 2)
+            
+            analysis['temperature_analysis'] = temperature_analysis
+        
+        # === EXTREME WEATHER EVENTS ===
+        extreme_events = {}
+        
+        # Temperature extremes (if available)
+        if 'Temperature (°C)' in station_data.columns:
+            temp_data = station_data['Temperature (°C)'].dropna()
+            if len(temp_data) > 0:
+                temp_p95 = temp_data.quantile(0.95)
+                temp_p5 = temp_data.quantile(0.05)
+                
+                extreme_events['temperature'] = {
+                    'hot_days_above_95th_percentile': int((temp_data > temp_p95).sum()),
+                    'cold_days_below_5th_percentile': int((temp_data < temp_p5).sum()),
+                    'threshold_hot': round(temp_p95, 1),
+                    'threshold_cold': round(temp_p5, 1)
+                }
+        
+        # Wind extremes
+        if 'Wind Speed (m/s)' in station_data.columns:
+            wind_data = station_data['Wind Speed (m/s)'].dropna()
+            if len(wind_data) > 0:
+                wind_p95 = wind_data.quantile(0.95)
+                extreme_events['wind'] = {
+                    'high_wind_events_above_95th_percentile': int((wind_data > wind_p95).sum()),
+                    'threshold_high_wind': round(wind_p95, 2)
+                }
+        
+        # Precipitation extremes
+        if 'Rain (mm)' in station_data.columns:
+            rain_data = station_data['Rain (mm)'].dropna()
+            if len(rain_data) > 0 and (rain_data > 0).any():
+                rain_p95 = rain_data[rain_data > 0].quantile(0.95)
+                extreme_events['precipitation'] = {
+                    'heavy_rain_events_above_95th_percentile': int((rain_data > rain_p95).sum()),
+                    'threshold_heavy_rain': round(rain_p95, 2)
+                }
+        
+        analysis['extreme_weather_events'] = extreme_events
+        
+        # === DATA QUALITY ASSESSMENT ===
+        data_quality = {
+            'completeness': {},
+            'temporal_coverage': {
+                'hours_per_day': round(len(station_data) / len(station_data['day'].unique()), 1),
+                'days_covered': len(station_data.groupby(['year', 'month', 'day'])),
+                'months_covered': len(station_data.groupby(['year', 'month']))
+            }
+        }
+        
+        for col in meteorological_columns:
+            if col in station_data.columns:
+                completeness = (1 - station_data[col].isna().mean()) * 100
+                data_quality['completeness'][col] = round(completeness, 1)
+        
+        analysis['data_quality'] = data_quality
+        
+        comprehensive_analysis[station_name] = analysis
+    
+    return comprehensive_analysis
+
+def create_station_comparison_report(comprehensive_analysis):# Create a copy to avoid modifying the original dataframe
+    """
+    Create a comparative analysis report across all stations
+    """
+    comparison_report = {
+        'summary': {
+            'total_stations': len(comprehensive_analysis),
+            'station_names': list(comprehensive_analysis.keys())
+        },
+        'comparative_statistics': {}
+    }
+    
+    # Compare key metrics across stations
+    metrics_to_compare = [
+        'Temperature (°C)', 'Humidity (%)', 'Wind Speed (m/s)', 
+        'Rain (mm)', 'Wind Direction (Deg.)'
+    ]
+    
+    for metric in metrics_to_compare:
+        station_values = {}
+        for station_name, analysis in comprehensive_analysis.items():
+            if metric in analysis.get('overall_statistics', {}):
+                station_values[station_name] = analysis['overall_statistics'][metric]['mean']
+        
+        if station_values:
+            comparison_report['comparative_statistics'][metric] = {
+                'highest_station': max(station_values, key=station_values.get),
+                'highest_value': max(station_values.values()),
+                'lowest_station': min(station_values, key=station_values.get),
+                'lowest_value': min(station_values.values()),
+                'all_stations': station_values
+            }
+    
+    return comparison_report
+
+def generate_comprehensive_analysis(gdf, csv_path, output_dir=Path("Results")):
+    """
+    Main function to generate comprehensive meteorological analysis
+    """
+    print("=== COMPREHENSIVE METEOROLOGICAL ANALYSIS ===")
+    print("Loading data...")
+    
+    # Load data
+    stations_df = pd.read_csv(csv_path)
+    
+    print(f"Grid cells: {len(gdf)}")
+    print(f"Station records: {len(stations_df)}")
+    print(f"Unique stations: {stations_df['Station'].nunique()}")
+    print(f"Date range: {stations_df['Timestamp'].min()} to {stations_df['Timestamp'].max()}")
+    
+    # Identify meteorological columns (exclude location and identifier columns)
+    excluded_cols = ['Station', 'Latitude', 'Longitude', 'Timestamp']
+    meteorological_columns = [col for col in stations_df.columns if col not in excluded_cols]
+    print(f"Meteorological variables: {meteorological_columns}")
+    
+    # Set up results directory and cache file
+    results_folder = Path("Results")
+    results_folder.mkdir(exist_ok=True)
+    cell_station_file = results_folder / "cell_station_mapping.json"
+    comprehensive_station_analysis_file = results_folder / "comprehensive_station_analysis.json"
+    station_averages_file = results_folder / "station_averages.json"
+    create_station_comparison_file = results_folder / "station_comparison_report.json"
+    station_summary_file = results_folder / "station_summary_report.json"
+
+    # 1. Grid-Station Mapping
+    print("\n1. Creating grid-station mapping...")
+    
+    # Check if cached values exist and are valid
+    flag = False
+    if cell_station_file.exists():
+        try:
+            with open(cell_station_file) as json_file:
+                cell_station_mapping = json.load(json_file)
+                logger.info(f"Loaded weights from cache: {cell_station_file}")
+                
+                # Check if cache is valid for current dataset
+                if len(gdf) <= len(cell_station_mapping):
+                    # Filter the cell_station_mapping dictionary to match gdf's fid values
+                    cell_station_mapping = {
+                        key: value
+                        for key, value in cell_station_mapping.items()
+                        if int(key) in gdf['fid'].values
+                    }
+                    flag = True
+                else:
+                    logger.warning("Cache has fewer entries than current dataset, recalculating")
+        except Exception as e:
+            logger.warning(f"Error loading cached weights: {str(e)}")
+    
+    # Calculate weights if not loaded from cache
+    if not flag:
+        cell_station_mapping = find_closest_stations(gdf, stations_df)
+        # Save cell-station mapping
+        with open(f"{output_dir}/cell_station_mapping.json", 'w') as f:
+            json.dump(cell_station_mapping, f, indent=2)
+
+    # 2. Comprehensive Station Analysis
+    print("\n2. Performing comprehensive station analysis...")
+    if comprehensive_station_analysis_file.exists():
+        with open(comprehensive_station_analysis_file) as f:
+            comprehensive_analysis = json.load(f)
+    else:
+        comprehensive_analysis = comprehensive_station_analysis(stations_df)
+        # Save comprehensive analysis
+        with open(f"{output_dir}/comprehensive_station_analysis.json", 'w') as f:
+            json.dump(comprehensive_analysis, f, indent=2)
+    
+    # 3. Station Comparison Report
+    print("\n3. Creating station comparison report...")
+    if create_station_comparison_file.exists():
+        with open(create_station_comparison_file) as f:
+            comparison_report = json.load(f)
+    else:
+        comparison_report = create_station_comparison_report(comprehensive_analysis)
+        # Save comparison report
+        with open(f"{output_dir}/station_comparison_report.json", 'w') as f:
+            json.dump(comparison_report, f, indent=2)
+
+    # 4. Calculate station averages
+    print("\n4. Calculating station averages...")
+    if station_averages_file.exists():
+        with open(station_averages_file) as f:
+            station_averages = json.load(f)
+    else:
+        station_averages = calculate_station_averages(stations_df, meteorological_columns)
+        # Save station averages
+        with open(f"{output_dir}/station_averages.json", 'w') as f:
+            json.dump(station_averages, f, indent=2)
+
+    
+    if station_summary_file.exists():
+        with open(station_summary_file) as f:
+            summary_stats = json.load(f)
+    else:
+        # Create summary report
+        summary_stats = {}
+        for station_name, analysis in comprehensive_analysis.items():
+            summary_stats[station_name] = {
+                'coordinates': analysis['station_info']['coordinates'],
+                'data_records': analysis['station_info']['data_period']['total_records'],
+                'temperature_mean': analysis['overall_statistics'].get('Temperature (°C)', {}).get('mean', 'N/A'),
+                'humidity_mean': analysis['overall_statistics'].get('Humidity (%)', {}).get('mean', 'N/A'),
+                'wind_speed_mean': analysis['overall_statistics'].get('Wind Speed (m/s)', {}).get('mean', 'N/A'),
+                'total_rainfall': analysis.get('precipitation_analysis', {}).get('total_rainfall', 'N/A')
+            }
+        
+        with open(f"{output_dir}/station_summary.json", 'w') as f:
+            json.dump(summary_stats, f, indent=2)
+    
+    print("\n=== ANALYSIS COMPLETE ===")
+    print(f"Files:")
+    print(f"- {output_dir}/cell_station_mapping.json")
+    print(f"- {output_dir}/station_averages.json")
+    print(f"- {output_dir}/comprehensive_station_analysis.json")  
+    print(f"- {output_dir}/station_comparison_report.json")
+    print(f"- {output_dir}/station_summary.json")
+
+    return cell_station_mapping, comprehensive_analysis, comparison_report
 
 def weight_calculation(
     gdf: gpd.GeoDataFrame,
